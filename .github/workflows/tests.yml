@@ -25,6 +25,10 @@ jobs:
         run: python -m playwright install --with-deps chromium
 
       - name: Run tests
+        env:
+          URL: ${{ secrets.URL }}
+          ADMIN: ${{ secrets.ADMIN }}
+          PASSWORD: ${{ secrets.PASSWORD }}
         run: pytest --video=retain-on-failure
 
       - uses: actions/setup-java@v4

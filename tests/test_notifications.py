@@ -1,23 +1,22 @@
 """Case 47 — form tạo thông báo."""
 
 import allure
-from playwright.sync_api import Page, expect
+from playwright.sync_api import Page
 
-from tests.support import open_tab
+from pages.notification_page import NotificationPage
+from tests.support import description_md
 
 
 @allure.feature("通知画面")
 @allure.story("作成ボタンの非活性")
 @allure.title("GD02.8-05: 未入力だと通知の作成ボタンが非活性")
-def test_gd02_8_05_notification_create_disabled(admin: Page) -> None:
-    """Case 47: để trống tiêu đề và nội dung thì nút 作成する bị khóa.
-
-    Nút 作成する còn có ở màn tạo ticket, nên chỉ tìm trong dialog đang mở.
+@description_md(
     """
-    open_tab(admin, "通知")
-    admin.get_by_role("button", name="通知を作成する").click()
-
-    dialog = admin.get_by_role("dialog", name="通知を作成")
-    expect(dialog.get_by_label("タイトル")).to_have_value("")
-    expect(dialog.get_by_label("内容")).to_have_value("")
-    expect(dialog.get_by_role("button", name="作成する")).to_be_disabled()
+    - **前提条件**: 通知作成モーダルを表示中
+    - **テスト手順**: 1. タイトルまたは内容を未入力のままにする
+    - **期待する結果**: 「作成する」ボタンが非活性のままである
+    """
+)
+def test_gd02_8_05_notification_create_disabled(admin: Page) -> None:
+    """Case 47: để trống tiêu đề và nội dung thì nút 作成する bị khóa."""
+    NotificationPage(admin).expect_create_disabled_when_empty()

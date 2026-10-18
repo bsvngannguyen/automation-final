@@ -1,23 +1,22 @@
 """Case 8 — ô chữ ký ở màn cài đặt."""
 
 import allure
-from playwright.sync_api import Page, expect
+from playwright.sync_api import Page
 
-from tests.support import open_tab
+from pages.settings_page import SettingsPage
+from tests.support import description_md
 
 
 @allure.feature("設定画面")
 @allure.story("文字数カウンター")
 @allure.title("GD02.3-001: 署名は100文字で止まりカウンターが100/100になる")
+@description_md(
+    """
+    - **前提条件**: 設定画面を表示中
+    - **テスト手順**: 1. 署名欄に100文字を超えるテキストを入力しようとする
+    - **期待する結果**: 最大100文字までしか入力できず、カウンター表示が「100/100文字」で止まる
+    """
+)
 def test_gd02_3_001_signature_counter(admin: Page) -> None:
     """Case 8: gõ quá 100 ký tự thì ô ký dừng ở 100 và bộ đếm là 100/100文字."""
-    open_tab(admin, "設定")
-    expect(admin.get_by_role("heading", name="設定")).to_be_visible()
-
-    signature = admin.get_by_label("署名")
-    signature.click()
-    # Gõ từng ký tự để trình duyệt chặn đúng maxlength=100.
-    signature.press_sequentially("a" * 101)
-
-    expect(signature).to_have_value("a" * 100)
-    expect(admin.locator("#signature_counter")).to_have_text("100/100文字")
+    SettingsPage(admin).expect_signature_stops_at_100()
